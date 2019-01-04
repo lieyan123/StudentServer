@@ -1,0 +1,15 @@
+{
+  "apps": [{
+    "name": "TJStudentServer",
+    "script": "production.js",
+    "cwd": "D:\VScode项目存放\学生信息管理系统\TJStudentServer",
+    "exec_mode": "fork",
+    "max_memory_restart": "1G",
+    "autorestart": true,
+    "node_args": [],
+    "args": [],
+    "env": {
+      
+    }
+  }]
+}
