@@ -5,21 +5,29 @@ module.exports = class extends Base {
     // return this.display();
   }
   async GetMajorsAction() {
-    const pageNum = this.ctx.query.pageNum     //页码
-    const pageSize = this.ctx.query.pageSize   //单页显示数量
-    const searchKey =this.ctx.query.searchKey         //查询键
-    const searchValue =this.ctx.query.searchValue     //查询值
-    let majorModel = this.model('major');
-    let tableData
-    if(!think.isEmpty(searchKey)&&!think.isEmpty(searchValue)){
+    const pageNum = this.ctx.query.pageNum; // 页码
+    const pageSize = this.ctx.query.pageSize; // 单页显示数量
+    const searchKey = this.ctx.query.searchKey; // 查询键
+    const searchValue = this.ctx.query.searchValue; // 查询值
+    const majorModel = this.model('major');
+    let tableData;
+    if (!think.isEmpty(searchKey) && !think.isEmpty(searchValue)) {
       tableData = await majorModel.page(pageNum, pageSize).where(`${searchKey} LIKE '%${searchValue}%'`).select();
-    }else{
+    } else {
       tableData = await majorModel.page(pageNum, pageSize).select();
     }
-    const totalRecouds = await majorModel.count();   //从数组取出总记录数
+    const totalRecouds = await majorModel.count(); // 从数组取出总记录数
     this.body = {
       tableData,
       totalRecouds
-    }
+    };
+  }
+  async GetMajorClassAction() {
+    const major_id = this.ctx.query.major_id;
+    const classModel = this.model('classes');
+    const classArr = await classModel.where({major_id: major_id}).select();
+    this.body = {
+      classArr
+    };
   }
 };

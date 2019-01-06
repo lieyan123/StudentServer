@@ -28,4 +28,16 @@ module.exports = class extends Base {
     await academyModel.where({academy_id: formData.academy_id}).update(formData);
     this.ctx.status = 200;
   }
+
+  async GetAcademyDetailsAction() {
+    const academy_id = this.ctx.query.academy_id;
+    const academy_vModel = this.model('academy_v');
+    const majorModel = this.model('major');
+    const managerArr = await academy_vModel.where({academy_id: academy_id, role_id: '4'}).select();
+    const majorArr = await majorModel.where({academy_id: academy_id}).select();
+    this.body = {
+      managerArr,
+      majorArr
+    };
+  }
 };
