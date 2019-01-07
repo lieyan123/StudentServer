@@ -1,4 +1,5 @@
 const Base = require('./base.js');
+const moment = require('moment');
 
 module.exports = class extends Base {
   indexAction() {
@@ -21,5 +22,24 @@ module.exports = class extends Base {
       tableData,
       totalRecouds
     };
+  }
+  async GetYearsTableAction() {
+    const yearModel = this.model('years');
+    const tableData = await yearModel.select();
+    this.body = {
+      tableData
+    };
+  }
+  async AddClassAction() {
+    const formData = this.ctx.request.body.post.formData;
+    formData.Admission_time = moment(formData.Admission_time).format('YYYY-MM-DD');
+    const classModel = this.model('classes');
+    await classModel.add(formData);
+  }
+  async UpdateClassAction() {
+    const formData = this.ctx.request.body.post.formData;
+    formData.Admission_time = moment(formData.Admission_time).format('YYYY-MM-DD');
+    const classModel = this.model('classes');
+    await classModel.where({class_id: formData.class_id}).update(formData);
   }
 };

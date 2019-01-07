@@ -1,5 +1,5 @@
 const Base = require('./base.js');
-
+const moment = require('moment');
 module.exports = class extends Base {
   indexAction() {
     // return this.display();
@@ -9,7 +9,7 @@ module.exports = class extends Base {
     const pageSize = this.ctx.query.pageSize; // 单页显示数量
     const searchKey = this.ctx.query.searchKey; // 查询键
     const searchValue = this.ctx.query.searchValue; // 查询值
-    const majorModel = this.model('major');
+    const majorModel = this.model('major_v');
     let tableData;
     if (!think.isEmpty(searchKey) && !think.isEmpty(searchValue)) {
       tableData = await majorModel.page(pageNum, pageSize).where(`${searchKey} LIKE '%${searchValue}%'`).select();
@@ -29,5 +29,17 @@ module.exports = class extends Base {
     this.body = {
       classArr
     };
+  }
+  async AddMajorAction() {
+    const formData = this.ctx.request.body.post.formData;
+    formData.major_createtime = moment(formData.major_createtime).format('YYYY-MM-DD');
+    const majorModel = this.model('major');
+    await majorModel.add(formData);
+  }
+  async UpdateMajorAction() {
+    const formData = this.ctx.request.body.post.formData;
+    formData.major_createtime = moment(formData.major_createtime).format('YYYY-MM-DD');
+    const majorModel = this.model('major');
+    await majorModel.where({major_id: formData.major_id}).update(formData);
   }
 };

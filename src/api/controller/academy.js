@@ -1,4 +1,5 @@
 const Base = require('./base.js');
+const moment = require('moment');
 
 module.exports = class extends Base {
   indexAction() {
@@ -39,5 +40,11 @@ module.exports = class extends Base {
       managerArr,
       majorArr
     };
+  }
+  async AddAcademyAction() {
+    const formData = this.ctx.request.body.post.formData;
+    formData.academy_createtime = moment(formData.academy_createtime).format('YYYY-MM-DD');
+    const academyModel = this.model('academy');
+    await academyModel.add(formData);
   }
 };

@@ -2,21 +2,21 @@
 Navicat MySQL Data Transfer
 
 Source Server         : localhost_3306
-Source Server Version : 50718
+Source Server Version : 50724
 Source Host           : localhost:3306
 Source Database       : studentserver
 
 Target Server Type    : MYSQL
-Target Server Version : 50718
+Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-01-06 22:46:17
+Date: 2019-01-07 18:01:53
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for `academy`
+-- Table structure for academy
 -- ----------------------------
 DROP TABLE IF EXISTS `academy`;
 CREATE TABLE `academy` (
@@ -25,16 +25,17 @@ CREATE TABLE `academy` (
   `academy_createtime` varchar(255) DEFAULT NULL,
   `state` varchar(255) DEFAULT '正常' COMMENT '正常/废弃',
   PRIMARY KEY (`academy_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of academy
 -- ----------------------------
 INSERT INTO `academy` VALUES ('1', '医药信息工程学院', '2018-12-12', '正常');
 INSERT INTO `academy` VALUES ('2', '中药学院', '2018-12-12', '正常');
+INSERT INTO `academy` VALUES ('3', '护理学院', '2019-01-07', '正常');
 
 -- ----------------------------
--- Table structure for `access`
+-- Table structure for access
 -- ----------------------------
 DROP TABLE IF EXISTS `access`;
 CREATE TABLE `access` (
@@ -42,7 +43,7 @@ CREATE TABLE `access` (
   `access_name` varchar(255) DEFAULT NULL,
   `access_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`access_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of access
@@ -67,9 +68,15 @@ INSERT INTO `access` VALUES ('17', '批量修改学生', '/api/student/UpdateStu
 INSERT INTO `access` VALUES ('18', '修改单个学院信息', '/api/academy/UpdateAcademy');
 INSERT INTO `access` VALUES ('19', '查看学院明细信息', '/api/academy/GetAcademyDetails');
 INSERT INTO `access` VALUES ('20', '获取专业对应班级信息', '/api/major/GetMajorClass');
+INSERT INTO `access` VALUES ('21', '新增学院', '/api/academy/AddAcademy');
+INSERT INTO `access` VALUES ('22', '新增专业', '/api/major/AddMajor');
+INSERT INTO `access` VALUES ('23', '修改专业信息', '/api/major/UpdateMajor');
+INSERT INTO `access` VALUES ('24', '获得学年制', '/api/class/GetYearsTable');
+INSERT INTO `access` VALUES ('25', '新增班级', '/api/class/AddClass');
+INSERT INTO `access` VALUES ('26', '修改班级信息', '/api/class/UpdateClass');
 
 -- ----------------------------
--- Table structure for `classes`
+-- Table structure for classes
 -- ----------------------------
 DROP TABLE IF EXISTS `classes`;
 CREATE TABLE `classes` (
@@ -83,15 +90,16 @@ CREATE TABLE `classes` (
   KEY `major_id` (`major_id`),
   CONSTRAINT `classes_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `classes_ibfk_2` FOREIGN KEY (`major_id`) REFERENCES `major` (`major_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of classes
 -- ----------------------------
-INSERT INTO `classes` VALUES ('1', '计算机科学与技术（医药软件服务外包）152', '2018-12-12', '2', '1');
+INSERT INTO `classes` VALUES ('1', '15（2）', '2015-09-01', '2', '1');
+INSERT INTO `classes` VALUES ('2', '15（1）', '2015-09-01', '2', '1');
 
 -- ----------------------------
--- Table structure for `lesson`
+-- Table structure for lesson
 -- ----------------------------
 DROP TABLE IF EXISTS `lesson`;
 CREATE TABLE `lesson` (
@@ -109,7 +117,7 @@ INSERT INTO `lesson` VALUES ('1', '计算机组成原理', '32', '必修');
 INSERT INTO `lesson` VALUES ('2', 'Java程序设计', '32', '必修');
 
 -- ----------------------------
--- Table structure for `major`
+-- Table structure for major
 -- ----------------------------
 DROP TABLE IF EXISTS `major`;
 CREATE TABLE `major` (
@@ -120,15 +128,16 @@ CREATE TABLE `major` (
   PRIMARY KEY (`major_id`),
   KEY `academy_id` (`academy_id`),
   CONSTRAINT `major_ibfk_1` FOREIGN KEY (`academy_id`) REFERENCES `academy` (`academy_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of major
 -- ----------------------------
-INSERT INTO `major` VALUES ('1', '计算机科学与技术（医药软件服务外包）', '2018-12-12', '1');
+INSERT INTO `major` VALUES ('1', '计算机科学与技术（医药软件服务外包）', '2019-01-07', '1');
+INSERT INTO `major` VALUES ('4', '生物医学工程', '2019-01-07', '1');
 
 -- ----------------------------
--- Table structure for `role`
+-- Table structure for role
 -- ----------------------------
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -146,7 +155,7 @@ INSERT INTO `role` VALUES ('3', '学生');
 INSERT INTO `role` VALUES ('4', '院系管理员');
 
 -- ----------------------------
--- Table structure for `role_access`
+-- Table structure for role_access
 -- ----------------------------
 DROP TABLE IF EXISTS `role_access`;
 CREATE TABLE `role_access` (
@@ -158,7 +167,7 @@ CREATE TABLE `role_access` (
   KEY `access_id` (`access_id`),
   CONSTRAINT `role_access_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `role_access_ibfk_2` FOREIGN KEY (`access_id`) REFERENCES `access` (`access_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of role_access
@@ -186,9 +195,15 @@ INSERT INTO `role_access` VALUES ('23', '1', '17');
 INSERT INTO `role_access` VALUES ('24', '1', '18');
 INSERT INTO `role_access` VALUES ('25', '1', '19');
 INSERT INTO `role_access` VALUES ('26', '1', '20');
+INSERT INTO `role_access` VALUES ('27', '1', '21');
+INSERT INTO `role_access` VALUES ('28', '1', '22');
+INSERT INTO `role_access` VALUES ('29', '1', '23');
+INSERT INTO `role_access` VALUES ('30', '1', '24');
+INSERT INTO `role_access` VALUES ('31', '1', '25');
+INSERT INTO `role_access` VALUES ('32', '1', '26');
 
 -- ----------------------------
--- Table structure for `student`
+-- Table structure for student
 -- ----------------------------
 DROP TABLE IF EXISTS `student`;
 CREATE TABLE `student` (
@@ -226,7 +241,7 @@ INSERT INTO `student` VALUES ('2', '1500502231', '埒胭', '3', '1', '女', '本
 INSERT INTO `student` VALUES ('3', '1500502233', '新杰', '12', '1', '男', '本科生', '2019/1/15', '广东省/惠州市/惠城区/水口街道', '汉', '中国', '441622199912252599', '共青团员', '本科', '良好', '15013054359', '广东省/惠州市/惠城区/水口街道', '岭头村宜佳百货', '874297001@qq.com');
 
 -- ----------------------------
--- Table structure for `teacher`
+-- Table structure for teacher
 -- ----------------------------
 DROP TABLE IF EXISTS `teacher`;
 CREATE TABLE `teacher` (
@@ -256,7 +271,7 @@ INSERT INTO `teacher` VALUES ('7', '123456789', '啊啊啊', '工作人员', '10
 INSERT INTO `teacher` VALUES ('8', '1055', '张佳达', '讲师', '11', '1');
 
 -- ----------------------------
--- Table structure for `user`
+-- Table structure for user
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -283,7 +298,7 @@ INSERT INTO `user` VALUES ('11', '123456', '启用');
 INSERT INTO `user` VALUES ('12', '123456', '启用');
 
 -- ----------------------------
--- Table structure for `user_role`
+-- Table structure for user_role
 -- ----------------------------
 DROP TABLE IF EXISTS `user_role`;
 CREATE TABLE `user_role` (
@@ -311,7 +326,7 @@ INSERT INTO `user_role` VALUES ('9', '11', '2');
 INSERT INTO `user_role` VALUES ('10', '5', '4');
 
 -- ----------------------------
--- Table structure for `years`
+-- Table structure for years
 -- ----------------------------
 DROP TABLE IF EXISTS `years`;
 CREATE TABLE `years` (
@@ -329,43 +344,49 @@ INSERT INTO `years` VALUES ('2', '四年制', '4');
 INSERT INTO `years` VALUES ('3', '五年制', '5');
 
 -- ----------------------------
--- View structure for `academy_v`
+-- View structure for academy_v
 -- ----------------------------
 DROP VIEW IF EXISTS `academy_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `academy_v` AS select `academy`.`academy_id` AS `academy_id`,`academy`.`academy_name` AS `academy_name`,`academy`.`academy_createtime` AS `academy_createtime`,`academy`.`state` AS `state`,`teacher`.`teacher_name` AS `teacher_name`,`teacher`.`teacher_id` AS `teacher_id`,`role`.`role_name` AS `role_name`,`teacher`.`user_id` AS `user_id`,`role`.`role_id` AS `role_id` from ((((`academy` join `teacher` on((`teacher`.`academy_id` = `academy`.`academy_id`))) join `user` on((`teacher`.`user_id` = `user`.`user_id`))) join `user_role` on((`user_role`.`user_id` = `user`.`user_id`))) join `role` on((`user_role`.`role_id` = `role`.`role_id`))) ;
 
 -- ----------------------------
--- View structure for `classes_v`
+-- View structure for classes_v
 -- ----------------------------
 DROP VIEW IF EXISTS `classes_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `classes_v` AS select `years`.`year_num` AS `year_num`,`years`.`year_name` AS `year_name`,`classes`.`class_id` AS `class_id`,`classes`.`class_name` AS `class_name`,`classes`.`Admission_time` AS `Admission_time`,`classes`.`year_id` AS `year_id`,`classes`.`major_id` AS `major_id`,`major`.`major_name` AS `major_name`,`academy`.`academy_name` AS `academy_name`,`academy`.`academy_id` AS `academy_id` from (((`classes` join `major` on((`classes`.`major_id` = `major`.`major_id`))) join `years` on((`classes`.`year_id` = `years`.`year_id`))) join `academy` on((`major`.`academy_id` = `academy`.`academy_id`))) ;
 
 -- ----------------------------
--- View structure for `role_access_v`
+-- View structure for major_v
+-- ----------------------------
+DROP VIEW IF EXISTS `major_v`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `major_v` AS select `major`.`major_id` AS `major_id`,`major`.`major_name` AS `major_name`,`major`.`major_createtime` AS `major_createtime`,`major`.`academy_id` AS `academy_id`,`academy`.`academy_name` AS `academy_name` from (`major` join `academy` on((`major`.`academy_id` = `academy`.`academy_id`))) ;
+
+-- ----------------------------
+-- View structure for role_access_v
 -- ----------------------------
 DROP VIEW IF EXISTS `role_access_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `role_access_v` AS select `role`.`role_id` AS `role_id`,`role`.`role_name` AS `role_name`,`access`.`access_id` AS `access_id`,`access`.`access_name` AS `access_name`,`access`.`access_url` AS `access_url` from ((`access` join `role_access` on((`role_access`.`access_id` = `access`.`access_id`))) join `role` on((`role_access`.`role_id` = `role`.`role_id`))) ;
 
 -- ----------------------------
--- View structure for `student_v`
+-- View structure for student_v
 -- ----------------------------
 DROP VIEW IF EXISTS `student_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `student_v` AS select `student`.`student_id` AS `student_id`,`student`.`student_num` AS `student_num`,`student`.`student_name` AS `student_name`,`student`.`user_id` AS `user_id`,`user`.`password` AS `password`,`user`.`state` AS `state`,`student`.`class_id` AS `class_id`,`student`.`sex` AS `sex`,`student`.`phone` AS `phone`,`student`.`student_type` AS `student_type`,`classes`.`class_name` AS `class_name`,`student`.`native_place` AS `native_place`,`student`.`Ethnicity` AS `Ethnicity`,`student`.`nation` AS `nation`,`student`.`IDnumber` AS `IDnumber`,`student`.`political_status` AS `political_status`,`student`.`education` AS `education`,`student`.`health_condition` AS `health_condition`,`student`.`email` AS `email`,`student`.`addressDetails` AS `addressDetails`,`student`.`birthday` AS `birthday`,`student`.`familyAddress` AS `familyAddress` from ((`student` join `user` on((`student`.`user_id` = `user`.`user_id`))) join `classes` on((`student`.`class_id` = `classes`.`class_id`))) ;
 
 -- ----------------------------
--- View structure for `teacher_v`
+-- View structure for teacher_v
 -- ----------------------------
 DROP VIEW IF EXISTS `teacher_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `teacher_v` AS select `teacher`.`teacher_num` AS `teacher_num`,`teacher`.`teacher_name` AS `teacher_name`,`teacher`.`user_id` AS `user_id`,`user`.`password` AS `password`,`academy`.`academy_name` AS `academy_name`,`teacher`.`teacher_status` AS `teacher_status`,`user`.`state` AS `state`,`role`.`role_name` AS `role_name`,`role`.`role_id` AS `role_id` from ((((`teacher` join `user` on((`teacher`.`user_id` = `user`.`user_id`))) join `academy` on((`teacher`.`academy_id` = `academy`.`academy_id`))) join `user_role` on((`user_role`.`user_id` = `user`.`user_id`))) join `role` on((`user_role`.`role_id` = `role`.`role_id`))) ;
 
 -- ----------------------------
--- View structure for `user_role_access_v`
+-- View structure for user_role_access_v
 -- ----------------------------
 DROP VIEW IF EXISTS `user_role_access_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `user_role_access_v` AS select `user`.`user_id` AS `user_id`,`user`.`password` AS `password`,`role`.`role_id` AS `role_id`,`role`.`role_name` AS `role_name`,`access`.`access_id` AS `access_id`,`access`.`access_name` AS `access_name`,`access`.`access_url` AS `access_url` from ((((`user` join `user_role` on((`user_role`.`user_id` = `user`.`user_id`))) join `role` on((`user_role`.`role_id` = `role`.`role_id`))) join `role_access` on((`role_access`.`role_id` = `role`.`role_id`))) join `access` on((`role_access`.`access_id` = `access`.`access_id`))) ;
 
 -- ----------------------------
--- View structure for `user_role_v`
+-- View structure for user_role_v
 -- ----------------------------
 DROP VIEW IF EXISTS `user_role_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `user_role_v` AS select `user`.`user_id` AS `user_id`,`user`.`password` AS `password`,`role`.`role_id` AS `role_id`,`role`.`role_name` AS `role_name` from ((`user` join `user_role` on((`user_role`.`user_id` = `user`.`user_id`))) join `role` on((`user_role`.`role_id` = `role`.`role_id`))) ;
