@@ -43,7 +43,14 @@ module.exports = class extends Base {
   async AddClassLessonAction() {
     const lesson_id = this.ctx.request.body.post.lesson_id;
     const major_id = this.ctx.request.body.post.major_id;
+    const team = this.ctx.request.body.post.team;
     const major_lessonModel = this.model('major_lesson');
-    await major_lessonModel.add({lesson_id: formData.lesson_id}).update(formData);
+    await major_lessonModel.add({lesson_id: lesson_id, major_id: major_id, team: team});
+  }
+  async DeleteClassLessonAction() {
+    const lesson_id = this.ctx.request.body.post.lesson_id;
+    const major_id = this.ctx.request.body.post.major_id;
+    const major_lessonModel = this.model('major_lesson');
+    await major_lessonModel.where({lesson_id: lesson_id, major_id: major_id}).delete();
   }
 };
