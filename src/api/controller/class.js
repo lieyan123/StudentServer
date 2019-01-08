@@ -32,7 +32,10 @@ module.exports = class extends Base {
   }
   async AddClassAction() {
     const formData = this.ctx.request.body.post.formData;
+    const majorModel = this.model('major');
+    const major = await majorModel.where({major_id: formData.major_id}).find();
     formData.Admission_time = moment(formData.Admission_time).format('YYYY-MM-DD');
+    formData.class_name = major.major_name + formData.class_name;
     const classModel = this.model('classes');
     await classModel.add(formData);
   }

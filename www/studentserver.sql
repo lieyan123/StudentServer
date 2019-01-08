@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-01-07 18:01:53
+Date: 2019-01-08 15:06:45
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,7 +43,7 @@ CREATE TABLE `access` (
   `access_name` varchar(255) DEFAULT NULL,
   `access_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`access_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of access
@@ -74,6 +74,8 @@ INSERT INTO `access` VALUES ('23', '修改专业信息', '/api/major/UpdateMajor
 INSERT INTO `access` VALUES ('24', '获得学年制', '/api/class/GetYearsTable');
 INSERT INTO `access` VALUES ('25', '新增班级', '/api/class/AddClass');
 INSERT INTO `access` VALUES ('26', '修改班级信息', '/api/class/UpdateClass');
+INSERT INTO `access` VALUES ('27', '新增课程', '/api/lesson/AddLesson');
+INSERT INTO `access` VALUES ('28', '修改课程信息', '/api/lesson/UpdateLesson');
 
 -- ----------------------------
 -- Table structure for classes
@@ -90,13 +92,16 @@ CREATE TABLE `classes` (
   KEY `major_id` (`major_id`),
   CONSTRAINT `classes_ibfk_1` FOREIGN KEY (`year_id`) REFERENCES `years` (`year_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `classes_ibfk_2` FOREIGN KEY (`major_id`) REFERENCES `major` (`major_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of classes
 -- ----------------------------
-INSERT INTO `classes` VALUES ('1', '15（2）', '2015-09-01', '2', '1');
-INSERT INTO `classes` VALUES ('2', '15（1）', '2015-09-01', '2', '1');
+INSERT INTO `classes` VALUES ('1', '计算机科学与技术（医药软件服务外包）15（2）', '2015-09-01', '2', '1');
+INSERT INTO `classes` VALUES ('2', '计算机科学与技术（医药软件服务外包）15（1）', '2015-09-01', '2', '1');
+INSERT INTO `classes` VALUES ('3', '生物医学工程15（1）', '2019-09-01', '2', '4');
+INSERT INTO `classes` VALUES ('4', '生物医学工程15（2）', '2019-01-08', '2', '4');
+INSERT INTO `classes` VALUES ('5', '生物医学工程15（3）', '2019-01-08', '2', '4');
 
 -- ----------------------------
 -- Table structure for lesson
@@ -108,13 +113,14 @@ CREATE TABLE `lesson` (
   `lesson_hours` varchar(255) DEFAULT NULL,
   `lesson_type` varchar(255) DEFAULT '必修',
   PRIMARY KEY (`lesson_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of lesson
 -- ----------------------------
-INSERT INTO `lesson` VALUES ('1', '计算机组成原理', '32', '必修');
+INSERT INTO `lesson` VALUES ('1', '计算机组成原理', '32', '选修');
 INSERT INTO `lesson` VALUES ('2', 'Java程序设计', '32', '必修');
+INSERT INTO `lesson` VALUES ('3', '数据结构', '32', '必修');
 
 -- ----------------------------
 -- Table structure for major
@@ -135,6 +141,29 @@ CREATE TABLE `major` (
 -- ----------------------------
 INSERT INTO `major` VALUES ('1', '计算机科学与技术（医药软件服务外包）', '2019-01-07', '1');
 INSERT INTO `major` VALUES ('4', '生物医学工程', '2019-01-07', '1');
+
+-- ----------------------------
+-- Table structure for major_lesson
+-- ----------------------------
+DROP TABLE IF EXISTS `major_lesson`;
+CREATE TABLE `major_lesson` (
+  `major_lesson_id` int(11) NOT NULL AUTO_INCREMENT,
+  `major_id` int(11) DEFAULT NULL,
+  `lesson_id` int(11) DEFAULT NULL,
+  `team` varchar(255) DEFAULT NULL COMMENT '大一上学期/大一下学期/大二上学期/大二下学期',
+  PRIMARY KEY (`major_lesson_id`),
+  KEY `major_id` (`major_id`),
+  KEY `lesson_id` (`lesson_id`),
+  CONSTRAINT `major_lesson_ibfk_1` FOREIGN KEY (`major_id`) REFERENCES `major` (`major_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `major_lesson_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of major_lesson
+-- ----------------------------
+INSERT INTO `major_lesson` VALUES ('1', '1', '1', '大一上学期');
+INSERT INTO `major_lesson` VALUES ('2', '1', '2', '大一上学期');
+INSERT INTO `major_lesson` VALUES ('3', '1', '3', '大一上学期');
 
 -- ----------------------------
 -- Table structure for role
@@ -167,7 +196,7 @@ CREATE TABLE `role_access` (
   KEY `access_id` (`access_id`),
   CONSTRAINT `role_access_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `role_access_ibfk_2` FOREIGN KEY (`access_id`) REFERENCES `access` (`access_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of role_access
@@ -201,6 +230,31 @@ INSERT INTO `role_access` VALUES ('29', '1', '23');
 INSERT INTO `role_access` VALUES ('30', '1', '24');
 INSERT INTO `role_access` VALUES ('31', '1', '25');
 INSERT INTO `role_access` VALUES ('32', '1', '26');
+INSERT INTO `role_access` VALUES ('33', '1', '27');
+INSERT INTO `role_access` VALUES ('34', '1', '28');
+
+-- ----------------------------
+-- Table structure for score
+-- ----------------------------
+DROP TABLE IF EXISTS `score`;
+CREATE TABLE `score` (
+  `score_id` int(255) NOT NULL AUTO_INCREMENT,
+  `student_id` int(11) DEFAULT NULL,
+  `lesson_id` int(11) DEFAULT NULL,
+  `score` int(255) DEFAULT NULL,
+  PRIMARY KEY (`score_id`),
+  KEY `student_id` (`student_id`),
+  KEY `lesson_id` (`lesson_id`),
+  CONSTRAINT `score_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `score_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lesson` (`lesson_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of score
+-- ----------------------------
+INSERT INTO `score` VALUES ('1', '1', '1', '90');
+INSERT INTO `score` VALUES ('2', '1', '2', '80');
+INSERT INTO `score` VALUES ('3', '1', '3', '90');
 
 -- ----------------------------
 -- Table structure for student
@@ -231,7 +285,7 @@ CREATE TABLE `student` (
   KEY `class_id` (`class_id`),
   CONSTRAINT `student_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `student_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of student
@@ -239,6 +293,7 @@ CREATE TABLE `student` (
 INSERT INTO `student` VALUES ('1', '1500502234', '杨文豪', '2', '1', '男', '本科生', '2019/1/15', '广东省/惠州市/惠城区/水口街道', '汉', '中国', '441622199912252599', '共青团员', '本科', '良好', '15013054359', '广东省/惠州市/惠城区/水口街道', '岭头村宜佳百货', '874297001@qq.com');
 INSERT INTO `student` VALUES ('2', '1500502231', '埒胭', '3', '1', '女', '本科生', '2019/1/15', '广东省/惠州市/惠城区/水口街道', '汉', '中国', '441622199912252599', '共产党员', '本科', '良好', '15013054359', '广东省/惠州市/惠城区/水口街道', '水口龙湖', '874297001@qq.com');
 INSERT INTO `student` VALUES ('3', '1500502233', '新杰', '12', '1', '男', '本科生', '2019/1/15', '广东省/惠州市/惠城区/水口街道', '汉', '中国', '441622199912252599', '共青团员', '本科', '良好', '15013054359', '广东省/惠州市/惠城区/水口街道', '岭头村宜佳百货', '874297001@qq.com');
+INSERT INTO `student` VALUES ('4', '1500501234', '沉稳', '13', '2', '男', '本科生', '2019/1/15', '广东省/惠州市/惠城区/水口街道', '汉', '中国', '441622199912252599', '共青团员', '本科', '良好', '15013054359', '广东省/惠州市/惠城区/水口街道', '岭头村宜佳百货', '874297001@qq.com');
 
 -- ----------------------------
 -- Table structure for teacher
@@ -279,7 +334,7 @@ CREATE TABLE `user` (
   `password` varchar(255) DEFAULT '123456',
   `state` varchar(255) NOT NULL DEFAULT '启用' COMMENT '状态为启用或者禁用',
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user
@@ -296,6 +351,7 @@ INSERT INTO `user` VALUES ('9', '123456', '启用');
 INSERT INTO `user` VALUES ('10', '123456', '启用');
 INSERT INTO `user` VALUES ('11', '123456', '启用');
 INSERT INTO `user` VALUES ('12', '123456', '启用');
+INSERT INTO `user` VALUES ('13', '123456', '启用');
 
 -- ----------------------------
 -- Table structure for user_role
@@ -366,6 +422,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- ----------------------------
 DROP VIEW IF EXISTS `role_access_v`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `role_access_v` AS select `role`.`role_id` AS `role_id`,`role`.`role_name` AS `role_name`,`access`.`access_id` AS `access_id`,`access`.`access_name` AS `access_name`,`access`.`access_url` AS `access_url` from ((`access` join `role_access` on((`role_access`.`access_id` = `access`.`access_id`))) join `role` on((`role_access`.`role_id` = `role`.`role_id`))) ;
+
+-- ----------------------------
+-- View structure for score_v
+-- ----------------------------
+DROP VIEW IF EXISTS `score_v`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `score_v` AS select `student`.`student_id` AS `student_id`,`student`.`student_num` AS `student_num`,`student`.`student_name` AS `student_name`,`student`.`user_id` AS `user_id`,`student`.`class_id` AS `class_id`,`classes`.`class_name` AS `class_name`,`major`.`major_name` AS `major_name`,`major_lesson`.`team` AS `team`,`lesson`.`lesson_id` AS `lesson_id`,`lesson`.`lesson_name` AS `lesson_name`,`score`.`score` AS `score` from (((((`major` join `major_lesson` on((`major_lesson`.`major_id` = `major`.`major_id`))) join `classes` on((`classes`.`major_id` = `major`.`major_id`))) join `student` on((`student`.`class_id` = `classes`.`class_id`))) join `score` on((`score`.`student_id` = `student`.`student_id`))) join `lesson` on(((`major_lesson`.`lesson_id` = `lesson`.`lesson_id`) and (`score`.`lesson_id` = `lesson`.`lesson_id`)))) ;
 
 -- ----------------------------
 -- View structure for student_v
