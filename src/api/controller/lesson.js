@@ -32,4 +32,18 @@ module.exports = class extends Base {
     const lessonModel = this.model('lesson');
     await lessonModel.where({lesson_id: formData.lesson_id}).update(formData);
   }
+  async GetClassLessonsAction() {
+    const class_id = this.ctx.query.class_id;
+    const class_lesson_vModel = this.model('class_lesson_v');
+    const tableData = await class_lesson_vModel.where({class_id: class_id}).select();
+    this.body = {
+      tableData
+    };
+  }
+  async AddClassLessonAction() {
+    const lesson_id = this.ctx.request.body.post.lesson_id;
+    const major_id = this.ctx.request.body.post.major_id;
+    const major_lessonModel = this.model('major_lesson');
+    await major_lessonModel.add({lesson_id: formData.lesson_id}).update(formData);
+  }
 };

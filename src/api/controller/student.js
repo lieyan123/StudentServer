@@ -88,4 +88,12 @@ module.exports = class extends Base {
     });
     this.ctx.status = 200;
   }
+  async GetClassStudentsAction() {
+    const class_id = this.ctx.query.class_id;
+    const studentModel = this.model('student');
+    const tableData = await studentModel.where({class_id: class_id}).select();
+    this.body = {
+      tableData
+    };
+  }
 };
