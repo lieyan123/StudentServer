@@ -90,10 +90,24 @@ module.exports = class extends Base {
   }
   async GetClassStudentsAction() {
     const class_id = this.ctx.query.class_id;
-    const studentModel = this.model('student');
+    const studentModel = this.model('student_v');
     const tableData = await studentModel.where({class_id: class_id}).select();
     this.body = {
       tableData
+    };
+  }
+  async GetStudentScoreAction() {
+    const student_id = this.ctx.query.student_id;
+    const score_vModel = this.model('score_v');
+    const tableData = await score_vModel.where({student_id: student_id}).select();
+    const point1 = await score_vModel.where({team: ['like', '%大一%'], student_id: student_id}).avg('score');
+    const point2 = await score_vModel.where({team: ['like', '%大二%'], student_id: student_id}).avg('score');
+    const point3 = await score_vModel.where({team: ['like', '%大三%'], student_id: student_id}).avg('score');
+    const point4 = await score_vModel.where({team: ['like', '%大四%'], student_id: student_id}).avg('score');
+    const point = [point1, point2, point3, point4];
+    this.body = {
+      tableData,
+      point
     };
   }
 };

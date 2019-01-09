@@ -53,4 +53,25 @@ module.exports = class extends Base {
     const major_lessonModel = this.model('major_lesson');
     await major_lessonModel.where({lesson_id: lesson_id, major_id: major_id}).delete();
   }
+  async GetLessonScoreAction() {
+    const class_id = this.ctx.query.class_id;
+    const lesson_id = this.ctx.query.lesson_id;
+    const score_vModel = this.model('score_v');
+    const avg = await score_vModel.where({lesson_id: lesson_id, class_id: class_id}).avg('score');
+    const tableData = await score_vModel.where({lesson_id: lesson_id, class_id: class_id}).select();
+    const pass = [];
+    const down = [];
+    tableData.forEach(element => {
+      if (element.score < 60) {
+        down.push(element);
+      } else {
+        pass.push(element);
+      }
+    });
+    this.body = {
+      avg,
+      pass,
+      down
+    };
+  }
 };
