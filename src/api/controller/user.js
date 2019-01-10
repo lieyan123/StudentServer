@@ -43,4 +43,15 @@ module.exports = class extends Base {
       await userModel.where({user_id: id}).update({state: '启用'});
     }
   }
+  async UpdatePasswordAction() {
+    const formItem = this.ctx.request.body.post.formItem;
+    const userModel = this.model('user');
+    const password = await userModel.where({user_id: formItem.user_id}).getField('password', true);
+    if (password === formItem.oldPassword) {
+      await userModel.where({user_id: formItem.user_id}).update({passowrd: formItem.newPassword});
+      this.ctx.status = 200;
+    } else {
+      this.ctx.status = 500;
+    }
+  }
 };

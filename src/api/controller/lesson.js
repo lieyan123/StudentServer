@@ -42,16 +42,17 @@ module.exports = class extends Base {
   }
   async AddClassLessonAction() {
     const lesson_id = this.ctx.request.body.post.lesson_id;
-    const major_id = this.ctx.request.body.post.major_id;
+    const class_id = this.ctx.request.body.post.class_id;
     const team = this.ctx.request.body.post.team;
-    const major_lessonModel = this.model('major_lesson');
-    await major_lessonModel.add({lesson_id: lesson_id, major_id: major_id, team: team});
+    const teacher_id = this.ctx.request.body.post.teacher_id;
+    const class_lessonModel = this.model('class_lesson');
+    await class_lessonModel.add({lesson_id: lesson_id, class_id: class_id, team: team, teacher_id: teacher_id});
   }
   async DeleteClassLessonAction() {
     const lesson_id = this.ctx.request.body.post.lesson_id;
-    const major_id = this.ctx.request.body.post.major_id;
-    const major_lessonModel = this.model('major_lesson');
-    await major_lessonModel.where({lesson_id: lesson_id, major_id: major_id}).delete();
+    const class_id = this.ctx.request.body.post.class_id;
+    const class_lessonModel = this.model('class_lesson');
+    await class_lessonModel.where({lesson_id: lesson_id, class_id: class_id}).delete();
   }
   async GetLessonScoreAction() {
     const class_id = this.ctx.query.class_id;
@@ -62,6 +63,9 @@ module.exports = class extends Base {
     const pass = [];
     const down = [];
     tableData.forEach(element => {
+      if (element.score === null) {
+        element.score = 'null';
+      }
       if (element.score < 60) {
         down.push(element);
       } else {
@@ -71,7 +75,22 @@ module.exports = class extends Base {
     this.body = {
       avg,
       pass,
-      down
+      down,
+      tableData
     };
+  }
+  async UpdateScoresAction() {
+    const tableData = this.ctx.request.body.post.tableData;
+    const scoreModel = this.model('score');
+    tableData.forEach(async(element) => {
+      if (element.score !== 'null') {
+        const count = await scoreModel.where({student_id: element.student_id, lesson_id: element.lesson_id}).count();
+        if (count === 1) {
+          await scoreModel.where({student_id: element.student_id, lesson_id: element.lesson_id}).update(element);
+        } else {
+          await scoreModel.where({student_id: element.student_id, lesson_id: element.lesson_id}).add(element);
+        }
+      }
+    });
   }
 };
