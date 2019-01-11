@@ -48,10 +48,14 @@ module.exports = class extends Base {
     const userModel = this.model('user');
     const password = await userModel.where({user_id: formItem.user_id}).getField('password', true);
     if (password === formItem.oldPassword) {
-      await userModel.where({user_id: formItem.user_id}).update({passowrd: formItem.newPassword});
-      this.ctx.status = 200;
+      await userModel.where({user_id: formItem.user_id}).update({password: formItem.newPassword});
+      this.body = {
+        status: 200
+      };
     } else {
-      this.ctx.status = 500;
+      this.body = {
+        status: 500
+      };
     }
   }
 };

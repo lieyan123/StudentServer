@@ -1,6 +1,5 @@
 const Base = require('./base.js');
 const moment = require('moment');
-
 module.exports = class extends Base {
   indexAction() {
     // return this.display();
@@ -97,17 +96,40 @@ module.exports = class extends Base {
     };
   }
   async GetStudentScoreAction() {
-    const student_id = this.ctx.query.student_id;
+    const student_num = this.ctx.query.student_num;
     const score_vModel = this.model('score_v');
-    const tableData = await score_vModel.where({student_id: student_id}).select();
-    const point1 = await score_vModel.where({team: ['like', '%大一%'], student_id: student_id}).avg('score');
-    const point2 = await score_vModel.where({team: ['like', '%大二%'], student_id: student_id}).avg('score');
-    const point3 = await score_vModel.where({team: ['like', '%大三%'], student_id: student_id}).avg('score');
-    const point4 = await score_vModel.where({team: ['like', '%大四%'], student_id: student_id}).avg('score');
+    const tableData = await score_vModel.where({student_num: student_num}).select();
+    const Arr1 = await score_vModel.where({team: ['like', '%大一%'], student_num: student_num}).select();
+    const Arr2 = await score_vModel.where({team: ['like', '%大二%'], student_num: student_num}).select();
+    const Arr3 = await score_vModel.where({team: ['like', '%大三%'], student_num: student_num}).select();
+    const Arr4 = await score_vModel.where({team: ['like', '%大四%'], student_num: student_num}).select();
+    function pointMath(Arr) { // 计算出学分绩点
+      let sum = 0;
+      let divisor = 0;
+      Arr.forEach(element => {
+        sum += element.score * element.credit;
+        divisor += element.credit;
+      });
+      const point = parseFloat((sum / divisor).toFixed(4));
+      return point;
+    }
+    const point1 = pointMath(Arr1);
+    const point2 = pointMath(Arr2);
+    const point3 = pointMath(Arr3);
+    const point4 = pointMath(Arr4);
+
     const point = [point1, point2, point3, point4];
     this.body = {
       tableData,
       point
+    };
+  }
+  async GetOneStudentMessageAction() {
+    const student_num = this.ctx.query.student_num;
+    const studentModel = this.model('student_v');
+    const tableData = await studentModel.where({student_num: student_num}).find();
+    this.body = {
+      tableData
     };
   }
 };

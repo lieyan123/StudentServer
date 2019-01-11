@@ -20,8 +20,10 @@ module.exports = class extends Base {
       if (think.isEmpty(data) || data[0].state === '禁用') {
         return this.ctx.status = 500;
       } else {
-        if (password == data[0].password) {
-          this.body = { 'token': account, status };
+        if (password === data[0].password) {
+          this.body = {
+            token: {account, status}
+          };
         } else {
           return this.ctx.status = 500;
         }
@@ -31,17 +33,18 @@ module.exports = class extends Base {
     }
   }
   async get_infoAction() {
-    const token = this.ctx.query.token; // token里存的是teacher_num 或者student_num
-    const status = this.ctx.query.status;
+    let token = this.ctx.query.token; // token里存的是teacher_num 或者student_num
+    token = JSON.parse(token);
+    // const status = this.ctx.query.status;
     const user_role_access_v_Model = this.model('user_role_access_v');// 用于查询用户权限
     const user_role_v_Model = this.model('user_role_v'); // 用于查询用户角色
     let userData;
-    if (status === '学生') {
+    if (token.status === '学生') {
       const studentModel = this.model('student_v'); // student表模型
-      userData = await studentModel.where({ 'student_num': token }).select();
+      userData = await studentModel.where({ 'student_num': token.account }).select();
     } else {
       const teacherModel = this.model('teacher_v');
-      userData = await teacherModel.where({ 'teacher_num': token }).select();
+      userData = await teacherModel.where({ 'teacher_num': token.account }).select();
     }
     const urlData = await user_role_access_v_Model.where({ 'user_id': userData[0]['user_id'] }).select();
     const roleData = await user_role_v_Model.where({ 'user_id': userData[0]['user_id'] }).select();
@@ -60,10 +63,11 @@ module.exports = class extends Base {
         code: 200,
         access: role,
         avator: 'https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png',
-        user_id: userData[0]['student_num'] || userData[0]['teacher_num'],
+        user_id: userData[0]['user_id'],
+        user_num: userData[0]['student_num'] || userData[0]['teacher_num'],
         user_name: userData[0]['student_name'] || userData[0]['teacher_name']
       };
-      await this.session('userNum', token);
+      await this.session('userNum', token.account);
       await this.session('access_url', access_url);
     }
   }
