@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-01-10 18:03:44
+Date: 2019-01-11 17:39:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,7 +43,7 @@ CREATE TABLE `access` (
   `access_name` varchar(255) DEFAULT NULL,
   `access_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`access_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of access
@@ -85,6 +85,7 @@ INSERT INTO `access` VALUES ('34', '获得某班级某课程成绩', '/api/lesso
 INSERT INTO `access` VALUES ('35', '获取某教师课程班级', '/api/class/GetTeacherClass');
 INSERT INTO `access` VALUES ('36', '教师更新课程成绩', '/api/lesson/UpdateScores');
 INSERT INTO `access` VALUES ('37', '修改密码', '/api/user/UpdatePassword');
+INSERT INTO `access` VALUES ('38', '获得单个学生信息', '/api/student/GetOneStudentMessage');
 
 -- ----------------------------
 -- Table structure for classes
@@ -151,15 +152,16 @@ CREATE TABLE `lesson` (
   `lesson_name` varchar(255) DEFAULT NULL,
   `lesson_hours` varchar(255) DEFAULT NULL,
   `lesson_type` varchar(255) DEFAULT '必修',
+  `credit` int(11) NOT NULL,
   PRIMARY KEY (`lesson_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of lesson
 -- ----------------------------
-INSERT INTO `lesson` VALUES ('1', '计算机组成原理', '32', '选修');
-INSERT INTO `lesson` VALUES ('2', 'Java程序设计', '32', '必修');
-INSERT INTO `lesson` VALUES ('3', '数据结构', '32', '必修');
+INSERT INTO `lesson` VALUES ('1', '计算机组成原理', '32', '选修', '3');
+INSERT INTO `lesson` VALUES ('2', 'Java程序设计', '32', '必修', '5');
+INSERT INTO `lesson` VALUES ('3', '数据结构', '32', '必修', '3');
 
 -- ----------------------------
 -- Table structure for major
@@ -212,7 +214,7 @@ CREATE TABLE `role_access` (
   KEY `access_id` (`access_id`),
   CONSTRAINT `role_access_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `role_access_ibfk_2` FOREIGN KEY (`access_id`) REFERENCES `access` (`access_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of role_access
@@ -263,6 +265,8 @@ INSERT INTO `role_access` VALUES ('46', '2', '36');
 INSERT INTO `role_access` VALUES ('47', '1', '37');
 INSERT INTO `role_access` VALUES ('48', '2', '37');
 INSERT INTO `role_access` VALUES ('49', '3', '37');
+INSERT INTO `role_access` VALUES ('50', '3', '38');
+INSERT INTO `role_access` VALUES ('51', '3', '33');
 
 -- ----------------------------
 -- Table structure for score
@@ -295,7 +299,7 @@ INSERT INTO `score` VALUES ('5', '3', '1', '89');
 DROP TABLE IF EXISTS `student`;
 CREATE TABLE `student` (
   `student_id` int(11) NOT NULL AUTO_INCREMENT,
-  `student_num` varchar(255) DEFAULT NULL,
+  `student_num` varchar(255) NOT NULL,
   `student_name` varchar(255) DEFAULT NULL,
   `user_id` int(255) DEFAULT NULL,
   `class_id` int(11) DEFAULT NULL,
@@ -313,7 +317,7 @@ CREATE TABLE `student` (
   `familyAddress` varchar(255) DEFAULT NULL,
   `addressDetails` varchar(255) DEFAULT NULL COMMENT '详细门牌号等',
   `email` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`student_id`),
+  PRIMARY KEY (`student_id`,`student_num`),
   KEY `user_id` (`user_id`),
   KEY `class_id` (`class_id`),
   CONSTRAINT `student_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -398,11 +402,11 @@ CREATE TABLE `user` (
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES ('1', 'admin', '启用');
-INSERT INTO `user` VALUES ('2', '123456', '启用');
+INSERT INTO `user` VALUES ('2', '123', '启用');
 INSERT INTO `user` VALUES ('3', '123456', '启用');
 INSERT INTO `user` VALUES ('4', '123456', '启用');
 INSERT INTO `user` VALUES ('5', '123456', '启用');
-INSERT INTO `user` VALUES ('6', '123456', '启用');
+INSERT INTO `user` VALUES ('6', '123', '启用');
 INSERT INTO `user` VALUES ('7', '123456', '启用');
 INSERT INTO `user` VALUES ('8', '123456', '启用');
 INSERT INTO `user` VALUES ('9', '123456', '启用');
@@ -473,7 +477,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- View structure for class_lesson_v
 -- ----------------------------
 DROP VIEW IF EXISTS `class_lesson_v`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `class_lesson_v` AS select `lesson`.`lesson_id` AS `lesson_id`,`lesson`.`lesson_name` AS `lesson_name`,`lesson`.`lesson_hours` AS `lesson_hours`,`lesson`.`lesson_type` AS `lesson_type`,`teacher`.`teacher_id` AS `teacher_id`,`class_lesson`.`team` AS `team`,`classes`.`class_id` AS `class_id`,`classes`.`class_name` AS `class_name`,`teacher`.`teacher_num` AS `teacher_num`,`teacher`.`teacher_name` AS `teacher_name` from (((`classes` join `class_lesson` on((`class_lesson`.`class_id` = `classes`.`class_id`))) join `lesson` on((`class_lesson`.`lesson_id` = `lesson`.`lesson_id`))) join `teacher` on((`class_lesson`.`teacher_id` = `teacher`.`teacher_id`))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `class_lesson_v` AS select `lesson`.`lesson_id` AS `lesson_id`,`lesson`.`lesson_name` AS `lesson_name`,`lesson`.`lesson_hours` AS `lesson_hours`,`lesson`.`lesson_type` AS `lesson_type`,`teacher`.`teacher_id` AS `teacher_id`,`class_lesson`.`team` AS `team`,`classes`.`class_id` AS `class_id`,`classes`.`class_name` AS `class_name`,`teacher`.`teacher_num` AS `teacher_num`,`teacher`.`teacher_name` AS `teacher_name`,`user`.`user_id` AS `user_id` from ((((`classes` join `class_lesson` on((`class_lesson`.`class_id` = `classes`.`class_id`))) join `lesson` on((`class_lesson`.`lesson_id` = `lesson`.`lesson_id`))) join `teacher` on((`class_lesson`.`teacher_id` = `teacher`.`teacher_id`))) join `user` on((`teacher`.`user_id` = `user`.`user_id`))) ;
 
 -- ----------------------------
 -- View structure for major_v
@@ -491,7 +495,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- View structure for score_v
 -- ----------------------------
 DROP VIEW IF EXISTS `score_v`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `score_v` AS select `student`.`student_id` AS `student_id`,`student`.`student_num` AS `student_num`,`student`.`student_name` AS `student_name`,`student`.`user_id` AS `user_id`,`classes`.`class_id` AS `class_id`,`classes`.`class_name` AS `class_name`,`class_lesson`.`team` AS `team`,`teacher`.`teacher_id` AS `teacher_id`,`teacher`.`teacher_name` AS `teacher_name`,`lesson`.`lesson_id` AS `lesson_id`,`lesson`.`lesson_name` AS `lesson_name`,`lesson`.`lesson_hours` AS `lesson_hours`,`lesson`.`lesson_type` AS `lesson_type`,`score`.`score` AS `score` from (((((`class_lesson` join `classes` on((`class_lesson`.`class_id` = `classes`.`class_id`))) join `student` on((`student`.`class_id` = `classes`.`class_id`))) join `lesson` on((`class_lesson`.`lesson_id` = `lesson`.`lesson_id`))) join `teacher` on((`class_lesson`.`teacher_id` = `teacher`.`teacher_id`))) left join `score` on(((`score`.`student_id` = `student`.`student_id`) and (`score`.`lesson_id` = `lesson`.`lesson_id`)))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `score_v` AS select `student`.`student_id` AS `student_id`,`student`.`student_num` AS `student_num`,`student`.`student_name` AS `student_name`,`student`.`user_id` AS `user_id`,`classes`.`class_id` AS `class_id`,`classes`.`class_name` AS `class_name`,`class_lesson`.`team` AS `team`,`teacher`.`teacher_id` AS `teacher_id`,`teacher`.`teacher_name` AS `teacher_name`,`lesson`.`lesson_id` AS `lesson_id`,`lesson`.`lesson_name` AS `lesson_name`,`lesson`.`lesson_hours` AS `lesson_hours`,`lesson`.`lesson_type` AS `lesson_type`,`score`.`score` AS `score`,`lesson`.`credit` AS `credit` from (((((`class_lesson` join `classes` on((`class_lesson`.`class_id` = `classes`.`class_id`))) join `student` on((`student`.`class_id` = `classes`.`class_id`))) join `lesson` on((`class_lesson`.`lesson_id` = `lesson`.`lesson_id`))) join `teacher` on((`class_lesson`.`teacher_id` = `teacher`.`teacher_id`))) left join `score` on(((`score`.`student_id` = `student`.`student_id`) and (`score`.`lesson_id` = `lesson`.`lesson_id`)))) ;
 
 -- ----------------------------
 -- View structure for student_v
