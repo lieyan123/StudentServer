@@ -1,18 +1,18 @@
 const path = require('path');
 const isDev = think.env === 'development';
-const kcors = require('kcors')
+const kcors = require('kcors');
 
 module.exports = [
   {
-    handle:kcors,
+    handle: kcors,
     // options: {}
-    options:{
-      origin:'http://localhost:8080',
+    options: {
+      origin: 'http://localhost:8080',
       exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
       maxAge: 5,
       credentials: true,
-      allowMethods: ['GET', 'POST', 'DELETE','OPTION'],
-      allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+      allowMethods: ['GET', 'POST', 'DELETE', 'OPTION'],
+      allowHeaders: ['Content-Type', 'Authorization', 'Accept']
     }
   },
   {

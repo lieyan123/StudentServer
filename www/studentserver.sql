@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50724
 File Encoding         : 65001
 
-Date: 2019-01-11 17:39:06
+Date: 2019-01-14 18:02:10
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,7 +43,7 @@ CREATE TABLE `access` (
   `access_name` varchar(255) DEFAULT NULL,
   `access_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`access_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of access
@@ -86,6 +86,15 @@ INSERT INTO `access` VALUES ('35', '获取某教师课程班级', '/api/class/Ge
 INSERT INTO `access` VALUES ('36', '教师更新课程成绩', '/api/lesson/UpdateScores');
 INSERT INTO `access` VALUES ('37', '修改密码', '/api/user/UpdatePassword');
 INSERT INTO `access` VALUES ('38', '获得单个学生信息', '/api/student/GetOneStudentMessage');
+INSERT INTO `access` VALUES ('39', '获取信息条数', '/api/message/GetUnreadCount');
+INSERT INTO `access` VALUES ('40', '获得信息列表', '/api/message/GetMessageList');
+INSERT INTO `access` VALUES ('41', '获得单条信息内容', '/api/message/GetContent');
+INSERT INTO `access` VALUES ('42', '把未读消息设为已读', '/api/message/setReaded');
+INSERT INTO `access` VALUES ('43', '把已读消息移入垃圾箱', '/api/message/removeReaded');
+INSERT INTO `access` VALUES ('44', '把垃圾箱消息移回已读', '/api/message/Restore');
+INSERT INTO `access` VALUES ('45', '保存草稿', '/api/message/SaveDraft');
+INSERT INTO `access` VALUES ('46', '删除草稿', '/api/message/DeleteDraft');
+INSERT INTO `access` VALUES ('47', '获得草稿列表', '/api/message/GetDrafts');
 
 -- ----------------------------
 -- Table structure for classes
@@ -144,6 +153,22 @@ INSERT INTO `class_lesson` VALUES ('10', '1', '3', null, '大一下学期');
 INSERT INTO `class_lesson` VALUES ('11', '1', '3', '4', '大一上学期');
 
 -- ----------------------------
+-- Table structure for draft
+-- ----------------------------
+DROP TABLE IF EXISTS `draft`;
+CREATE TABLE `draft` (
+  `draft_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `content` tinytext,
+  PRIMARY KEY (`draft_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of draft
+-- ----------------------------
+INSERT INTO `draft` VALUES ('1', '测试', '在此写消息内容，会自动转为HTML格式');
+
+-- ----------------------------
 -- Table structure for lesson
 -- ----------------------------
 DROP TABLE IF EXISTS `lesson`;
@@ -184,6 +209,29 @@ INSERT INTO `major` VALUES ('1', '计算机科学与技术（医药软件服务�
 INSERT INTO `major` VALUES ('4', '生物医学工程', '2019-01-07', '1');
 
 -- ----------------------------
+-- Table structure for message
+-- ----------------------------
+DROP TABLE IF EXISTS `message`;
+CREATE TABLE `message` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `create_time` varchar(255) DEFAULT NULL,
+  `messageContext` tinytext,
+  `state` int(11) DEFAULT '0' COMMENT '0:未读 1：已读 -1：回收站',
+  PRIMARY KEY (`msg_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `message_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of message
+-- ----------------------------
+INSERT INTO `message` VALUES ('1', '1', '管理员你好', '1999-12-25', '系统管理员你好，这是第一条信息', '1');
+INSERT INTO `message` VALUES ('2', '1', '已读消息', '1998-12-11', '这是一条已读消息', '1');
+INSERT INTO `message` VALUES ('3', '1', '垃圾箱消息', '1998-12-01', '这是一条垃圾箱的消息', '-1');
+
+-- ----------------------------
 -- Table structure for role
 -- ----------------------------
 DROP TABLE IF EXISTS `role`;
@@ -214,7 +262,7 @@ CREATE TABLE `role_access` (
   KEY `access_id` (`access_id`),
   CONSTRAINT `role_access_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `role_access_ibfk_2` FOREIGN KEY (`access_id`) REFERENCES `access` (`access_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of role_access
@@ -267,6 +315,27 @@ INSERT INTO `role_access` VALUES ('48', '2', '37');
 INSERT INTO `role_access` VALUES ('49', '3', '37');
 INSERT INTO `role_access` VALUES ('50', '3', '38');
 INSERT INTO `role_access` VALUES ('51', '3', '33');
+INSERT INTO `role_access` VALUES ('52', '1', '39');
+INSERT INTO `role_access` VALUES ('53', '2', '39');
+INSERT INTO `role_access` VALUES ('54', '3', '39');
+INSERT INTO `role_access` VALUES ('55', '1', '40');
+INSERT INTO `role_access` VALUES ('56', '2', '40');
+INSERT INTO `role_access` VALUES ('57', '3', '40');
+INSERT INTO `role_access` VALUES ('58', '1', '41');
+INSERT INTO `role_access` VALUES ('59', '1', '42');
+INSERT INTO `role_access` VALUES ('60', '1', '44');
+INSERT INTO `role_access` VALUES ('61', '1', '43');
+INSERT INTO `role_access` VALUES ('62', '2', '43');
+INSERT INTO `role_access` VALUES ('63', '2', '44');
+INSERT INTO `role_access` VALUES ('64', '2', '41');
+INSERT INTO `role_access` VALUES ('65', '2', '42');
+INSERT INTO `role_access` VALUES ('66', '3', '44');
+INSERT INTO `role_access` VALUES ('67', '3', '43');
+INSERT INTO `role_access` VALUES ('68', '3', '41');
+INSERT INTO `role_access` VALUES ('69', '3', '42');
+INSERT INTO `role_access` VALUES ('70', '1', '45');
+INSERT INTO `role_access` VALUES ('71', '1', '46');
+INSERT INTO `role_access` VALUES ('72', '1', '47');
 
 -- ----------------------------
 -- Table structure for score
