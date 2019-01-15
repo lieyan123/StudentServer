@@ -1,5 +1,5 @@
 const Base = require('./base.js');
-
+const moment = require('moment');
 module.exports = class extends Base {
   indexAction() {
     // return this.display();
@@ -54,7 +54,7 @@ module.exports = class extends Base {
       await draftmodel.where({draft_id: formData.draft_id}).update(formData);
     }
   }
-  async DeleteDraftsAction() {
+  async DeleteDraftAction() {
     const draft_id = this.ctx.request.body.post.draft_id;
     const draftmodel = this.model('draft');
     await draftmodel.where({draft_id: draft_id}).delete();
@@ -65,5 +65,19 @@ module.exports = class extends Base {
     this.body = {
       draftArr
     };
+  }
+  async SendMessageAction() {
+    const teacherArr = this.ctx.request.body.post.teacherArr;
+    const studentArr = this.ctx.request.body.post.studentArr;
+    const title = this.ctx.request.body.post.title;
+    const messageContext = this.ctx.request.body.post.messageContext;
+    const create_time = moment().format('YYYY-MM-DD');
+    const messagemodel = this.model('message');
+    teacherArr.forEach(async element => {
+      await messagemodel.add({user_id: element, title: title, messageContext: messageContext, create_time: create_time});
+    });
+    studentArr.forEach(async element => {
+      await messagemodel.add({user_id: element, title: title, messageContext: messageContext, create_time: create_time});
+    });
   }
 };

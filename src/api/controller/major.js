@@ -24,6 +24,9 @@ module.exports = class extends Base {
   }
   async GetMajorClassAction() {
     const major_id = this.ctx.query.major_id;
+    if (major_id === undefined) {
+      return this.ctx.status = 200;
+    }
     const classModel = this.model('classes');
     const classArr = await classModel.where({major_id: major_id}).select();
     this.body = {
