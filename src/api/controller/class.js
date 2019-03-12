@@ -10,7 +10,7 @@ module.exports = class extends Base {
     const pageSize = this.ctx.query.pageSize; // 单页显示数量
     const searchKey = this.ctx.query.searchKey; // 查询键
     const searchValue = this.ctx.query.searchValue; // 查询值
-    const classModel = this.model('class_lesson_v');
+    const classModel = this.model('classes_v');
     let tableData;
     if (!think.isEmpty(searchKey) && !think.isEmpty(searchValue)) {
       tableData = await classModel.page(pageNum, pageSize).where(`${searchKey} LIKE '%${searchValue}%'`).select();
